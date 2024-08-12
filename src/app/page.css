@@ -1,57 +1,39 @@
-.intro-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* pantryItem section css  */
+.pantry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
   padding: 20px;
-  background-color: #121212;
-  color: white;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
+.pantry-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.pantry-item:hover {
+  transform: scale(1.05);
+}
+
+.pantry-item-image {
   width: 100%;
-  padding: 10px 20px;
-  background-color: #1c1c1c;
+  height: 150px;
+  object-fit: cover;
 }
 
-.logo svg {
-  color: white;
-  cursor: pointer;
-}
-
-.buttons .btn {
-  margin: 0 10px;
-  padding: 10px 20px;
-  background-color: #28a745;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-.intro-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.pantry-item-details {
+  padding: 10px;
   text-align: center;
-  margin-top: 20px;
 }
 
-.intro-image {
-  max-width: 100%;
-  height: auto;
-}
-
-.intro-text {
-  margin-top: 20px;
-}
-
-.intro-text h1 {
-  font-size: 2.5em;
-  margin-bottom: 10px;
-}
-
-.intro-text p {
+.pantry-item-details h3 {
+  margin: 10px 0;
   font-size: 1.2em;
-  margin-bottom: 5px;
+}
+
+.pantry-item-details p {
+  color: #666;
 }

@@ -1,0 +1,52 @@
+.pantry-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.item-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.item-info {
+  padding: 20px;
+}
+
+.item-info h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.item-info p {
+  font-size: 1em;
+  margin-bottom: 20px;
+}
+
+.item-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.item-buttons .btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.item-buttons .btn-remove {
+  background-color: #dc3545;
+}
