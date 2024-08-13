@@ -396,6 +396,7 @@ export default [
     name: "Ginger Tea",
 
     unit: "box",
-    userid: user.id, // the current user logged in
+    image:
+      "https://cdn.pixabay.com/photo/2017/05/23/18/57/ginger-tea-2338086_1280.jpg",
   },
 ];

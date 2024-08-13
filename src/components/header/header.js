@@ -1,21 +1,46 @@
 "use client";
+import { useState, useContext } from "react";
 import Link from "next/link";
 import "./header.css";
+import { AuthContext } from "../authContext.js";
+import { signOut } from "firebase/auth";
+import { auth } from "../../app/firebase.js";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function Header() {
-  async function handleClick() {
-    try {
-      await db.collection("items").add({
-        name: itemName,
-        unit: itemUnit,
-        userid: userId,
-      });
-      alert("Item added successfully!");
-    } catch (error) {
-      console.error("Error adding item: ", error);
-      alert("Failed to add item.");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemName, setItemName] = useState("");
+  const { user } = useContext(AuthContext); // Use AuthContext to get the user state
+
+  const router = useRouter(); // Initialize useRouter
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleChange = (e) => setItemName(e.target.value);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle item submission logic here
+    console.log("Item Name:", itemName);
+    setItemName("");
+    closeModal();
+  };
+
+  const handleAuthAction = async () => {
+    if (user) {
+      // User is logged in, so sign out
+      try {
+        await signOut(auth);
+        router.push("/login"); // Redirect to login page after signing out
+      } catch (error) {
+        console.error("Sign Out Error:", error);
+      }
+    } else {
+      // User is not logged in, redirect to sign in page
+      router.push("/login"); // Adjust this route based on your application's routes
     }
-  }
+  };
+
   return (
     <main className="intro-container">
       <header className="header">
@@ -38,24 +63,15 @@ export default function Header() {
           </Link>
         </div>
         <div className="buttons">
-          <button
-            className="btn"
-            onClick={() => {
-              console.log("hello");
-            }}
-          >
-            Add item{" "}
+          <button className="btn" onClick={openModal}>
+            Add item
           </button>
-          <button className="btn">Pantry</button>
+          <button className="btn" onClick={handleAuthAction}>
+            {user ? "Logout" : "Sign In"}
+          </button>
         </div>
       </header>
       <section className="intro-section">
-        {/* Uncomment the Image tag below if you have an image to use */}
-        {/* <Image
-          src={introImage}
-          alt="StockStash Introduction"
-          className="intro-image"
-        /> */}
         <div className="intro-text">
           <h1>Welcome to StockStash</h1>
           <p>
@@ -65,6 +81,32 @@ export default function Header() {
           <p>Developed by M. Ahmad and Prabh.</p>
         </div>
       </section>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="item">Add New Item</h2>
+            <button className="close-btn" onClick={closeModal}>
+              &times;
+            </button>
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="itemName">
+                Item Name:
+                <input
+                  type="text"
+                  id="itemName"
+                  value={itemName}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <button type="submit" className="submit-btn">
+                Save Item
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

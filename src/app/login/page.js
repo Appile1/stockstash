@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { useNavigate } from "next/navigation";
+import { useRouter } from "next/navigation"; // Import from next/navigation
+import Link from "next/link";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { auth, GoggleProvider, db, storage } from "../firebase";
+import { auth, GoogleProvider, db } from "../firebase";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -19,7 +20,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const defaultTheme = createTheme();
 
@@ -28,14 +28,19 @@ export default function AuthForm() {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
-    name: "",
+    // name: "", // Commented out name field for sign up
   });
-  const navigate = useNavigate();
+  // const [profilePic, setProfilePic] = useState(null); // Commented out profile picture handling
+  const router = useRouter(); // Use useRouter from next/navigation
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
   };
+
+  // const handleFileChange = (e) => {
+  //   setProfilePic(e.target.files[0]);
+  // };
 
   const SigninWithEmail = async () => {
     try {
@@ -44,7 +49,8 @@ export default function AuthForm() {
         loginData.email,
         loginData.password
       );
-      navigate("/"); // Redirect to home on successful login
+      console.log(loginData);
+      router.push("/"); // Redirect to home on successful login
     } catch (error) {
       console.error("Login Error:", error.message);
     }
@@ -52,57 +58,78 @@ export default function AuthForm() {
 
   const SignGoogle = async () => {
     try {
-      await signInWithPopup(auth, GoggleProvider);
-      navigate("/"); // Redirect to home on successful login
+      await signInWithPopup(auth, GoogleProvider);
+      router.push("/"); // Redirect to home on successful login
     } catch (error) {
       console.error("Google Sign-In Error:", error.message);
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSignUp = async (event) => {
     event.preventDefault();
-    if (isSignUp) {
-      await HandleSignUp();
-    } else {
-      SigninWithEmail();
-    }
-  };
 
-  const HandleSignUp = async () => {
     try {
       const res = await createUserWithEmailAndPassword(
         auth,
         loginData.email,
         loginData.password
       );
-      const file = event.target[3].files[0]; // Assuming file input is the 4th input element
+      router.push("/");
 
-      const storageRef = ref(storage, loginData.name);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      // Commented out profile picture upload and update profile
+      // if (profilePic) {
+      //   const storageRef = ref(storage, `profile_pics/${res.user.uid}`);
+      //   const uploadTask = uploadBytesResumable(storageRef, profilePic);
 
-      uploadTask.on(
-        "state_changed",
-        (error) => {
-          console.error("Storage Error:", error);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          await updateProfile(res.user, {
-            displayName: loginData.name,
-            photoURL: downloadURL,
-          });
-          await setDoc(doc(db, "Users", res.user.uid), {
-            Name: res.user.displayName,
-            uid: res.user.uid,
-            email: res.user.email,
-            photoURL: res.user.photoURL,
-          });
-          await setDoc(doc(db, "userChats", res.user.uid), {});
-          navigate("/");
-        }
-      );
+      //   uploadTask.on(
+      //     "state_changed",
+      //     (error) => {
+      //       console.error("Storage Error:", error);
+      //     },
+      //     async () => {
+      //       const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+      //       await updateProfile(res.user, {
+      //         displayName: loginData.name,
+      //         photoURL: downloadURL,
+      //       });
+
+      //       await setDoc(doc(db, "Users", res.user.uid), {
+      //         Name: res.user.displayName,
+      //         uid: res.user.uid,
+      //         email: res.user.email,
+      //         photoURL: res.user.photoURL,
+      //       });
+
+      //       await setDoc(doc(db, "userChats", res.user.uid), {});
+      //       router.push("/"); // Redirect to home on successful sign-up
+      //     }
+      //   );
+      // } else {
+      //   await updateProfile(res.user, {
+      //     displayName: loginData.name,
+      //   });
+
+      //   await setDoc(doc(db, "Users", res.user.uid), {
+      //     Name: res.user.displayName,
+      //     uid: res.user.uid,
+      //     email: res.user.email,
+      //   });
+
+      //   await setDoc(doc(db, "userChats", res.user.uid), {});
+      //   router.push("/"); // Redirect to home on successful sign-up
+      // }
     } catch (error) {
-      console.error("Sign Up Error:", error);
+      console.error("Sign Up Error:", error.message);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (isSignUp) {
+      handleSignUp(event);
+    } else {
+      SigninWithEmail();
     }
   };
 
@@ -131,18 +158,20 @@ export default function AuthForm() {
             sx={{ mt: 1 }}
           >
             {isSignUp && (
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label="Full Name"
-                name="name"
-                autoComplete="name"
-                autoFocus
-                value={loginData.name}
-                onChange={handleInputChange}
-              />
+              // Commented out name field for sign up
+              // <TextField
+              //   margin="normal"
+              //   required
+              //   fullWidth
+              //   id="name"
+              //   label="Name"
+              //   name="name"
+              //   autoComplete="name"
+              //   autoFocus
+              //   value={loginData.name}
+              //   onChange={handleInputChange}
+              // />
+              <></>
             )}
             <TextField
               margin="normal"
@@ -152,7 +181,6 @@ export default function AuthForm() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus={!isSignUp}
               value={loginData.email}
               onChange={handleInputChange}
             />
@@ -169,21 +197,21 @@ export default function AuthForm() {
               onChange={handleInputChange}
             />
             {isSignUp && (
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="file"
-                label="Profile Picture"
-                type="file"
-                id="file"
-              />
-            )}
-            {!isSignUp && (
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              // Commented out profile picture upload button
+              // <Button
+              //   fullWidth
+              //   variant="contained"
+              //   sx={{ mt: 3, mb: 2 }}
+              //   component="label"
+              // >
+              //   Upload Profile Picture
+              //   <input
+              //     type="file"
+              //     hidden
+              //     onChange={handleFileChange}
+              //   />
+              // </Button>
+              <></>
             )}
             <Button
               type="submit"
@@ -193,24 +221,18 @@ export default function AuthForm() {
             >
               {isSignUp ? "Sign Up" : "Sign In"}
             </Button>
-            {!isSignUp && (
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 1, mb: 2 }}
-                onClick={SignGoogle}
-              >
-                Sign In with Google
-              </Button>
-            )}
+
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 1, mb: 2 }}
+              onClick={SignGoogle}
+            >
+              {isSignUp ? "Sign Up with Google" : "Log In with Google"}
+            </Button>
+
             <Grid container>
-              <Grid item xs>
-                {!isSignUp && (
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                )}
-              </Grid>
+              <Grid item xs></Grid>
               <Grid item>
                 <Link
                   href="#"
