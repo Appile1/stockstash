@@ -20,9 +20,11 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <AuthContextProvide>
-          <Header />
-          {children}
-          <Footer />
+          <div className="page-wrapper">
+            <Header />
+            <main className="main-content">{children}</main>
+            <Footer />
+          </div>
         </AuthContextProvide>
       </body>
     </html>
