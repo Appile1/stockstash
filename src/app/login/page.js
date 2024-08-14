@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { auth, GoogleProvider, db } from "../firebase";
+import { GoggleProvider, db, auth } from "../firebase.js";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -58,7 +58,7 @@ export default function AuthForm() {
 
   const SignGoogle = async () => {
     try {
-      await signInWithPopup(auth, GoogleProvider);
+      await signInWithPopup(auth, GoggleProvider);
       router.push("/"); // Redirect to home on successful login
     } catch (error) {
       console.error("Google Sign-In Error:", error.message);

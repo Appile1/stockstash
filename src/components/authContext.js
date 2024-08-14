@@ -19,8 +19,7 @@ export const AuthContextProvide = ({ children }) => {
     return () => {
       unsubscribe();
     };
-  }, []); // Remove user from dependency array to avoid unnecessary re-renders
-
+  }, []);
   return (
     <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   );

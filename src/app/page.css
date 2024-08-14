@@ -37,3 +37,16 @@
 .pantry-item-details p {
   color: #666;
 }
+/* asda */
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* Adjust as needed to center vertically */
+  text-align: center;
+}
+
+.centered-message {
+  font-size: 1.2rem;
+  color: #333; /* Adjust the color to fit your design */
+}

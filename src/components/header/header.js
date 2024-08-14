@@ -4,40 +4,54 @@ import Link from "next/link";
 import "./header.css";
 import { AuthContext } from "../authContext.js";
 import { signOut } from "firebase/auth";
-import { auth } from "../../app/firebase.js";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { auth, db } from "../../app/firebase.js"; // Import db from your firebase setup
+import { useRouter } from "next/navigation";
+import { collection, addDoc } from "firebase/firestore"; // Import Firestore functions
 
 export default function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemName, setItemName] = useState("");
-  const { user } = useContext(AuthContext); // Use AuthContext to get the user state
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
 
-  const router = useRouter(); // Initialize useRouter
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const handleChange = (e) => setItemName(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle item submission logic here
-    console.log("Item Name:", itemName);
+
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+
+    try {
+      // Add a new document with a generated ID in the user's collection
+      await addDoc(collection(db, user.uid), {
+        name: itemName,
+        createdAt: new Date(), // Optionally add timestamp or other fields
+      });
+      console.log("Item added to Firestore:", itemName);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+
     setItemName("");
     closeModal();
   };
 
   const handleAuthAction = async () => {
     if (user) {
-      // User is logged in, so sign out
       try {
         await signOut(auth);
-        router.push("/login"); // Redirect to login page after signing out
+        router.push("/login");
       } catch (error) {
         console.error("Sign Out Error:", error);
       }
     } else {
-      // User is not logged in, redirect to sign in page
-      router.push("/login"); // Adjust this route based on your application's routes
+      router.push("/login");
     }
   };
 
